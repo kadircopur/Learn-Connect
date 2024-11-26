@@ -13,24 +13,24 @@ struct AsyncImageView: View {
     let width: CGFloat
     let height: CGFloat
     
+    @State private var isLoading = false
+    
     var body: some View {
         AsyncImage(url: URL(string: url)) { phase in
             switch phase {
-            case .empty:
-                Rectangle()
-                    .frame(width: width, height: height)
-                    .cornerRadius(10)
-                    .foregroundColor(Color.gray.opacity(0.2))
-                    .clipped()
             case .success(let image):
                 image
                     .resizable()
                     .frame(width: width, height: height)
                     .cornerRadius(10)
-            case .failure(let error):
-                Text("Couldn't load: \(error.localizedDescription)")
-            @unknown default:
-                fatalError()
+            case .failure(_):
+                Image(.imageplaceholder)
+                    .resizable()
+                    .frame(width: width, height: height)
+                    .cornerRadius(10)
+            default:
+                ShimmerEffectView(width: width, height: height)
+                    .frame(width: width, height: height)
             }
         }
     }
