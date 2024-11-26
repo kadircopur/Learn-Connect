@@ -18,7 +18,7 @@ class PersistenceService {
     
     private init() {
         do {
-            let container = try ModelContainer(for: User.self, Course.self)
+            let container = try ModelContainer(for: User.self, UserCourse.self)
             self.modelContext = container.mainContext
         } catch {
             fatalError("Failed to initialize SwiftData ModelContainer: \(error.localizedDescription)")
@@ -50,77 +50,15 @@ class PersistenceService {
         return try? modelContext.fetch(fetchRequest).first
     }
     
-    func updateUser(user: User, email: String? = nil, attendedCourses: [Course]? = nil, favouriteCourses: [Course]? = nil) {
-        if let email = email {
-            user.email = email
-        }
-        if let attendedCourses = attendedCourses {
-            user.attendedCourses = attendedCourses
-        }
-        if let favouriteCourses = favouriteCourses {
-            user.favouriteCourses = favouriteCourses
+    func updateUser(user: User, email: String? = nil, courses: [UserCourse]? = nil) {
+        if let courses = courses {
+            user.courses = courses
         }
         saveChanges()
     }
     
     func deleteUser(user: User) {
         modelContext.delete(user)
-        saveChanges()
-    }
-    
-    // MARK: - Course CRUD
-    
-    func createCourse(name: String, instructorName: String, thumbnailURL: String, videoURL: String, detail: String, content: String, duration: String) -> Course {
-        let course = Course(
-            id: UUID(),
-            name: name,
-            instructorName: instructorName,
-            thumbnailURL: thumbnailURL,
-            videoURL: videoURL,
-            detail: detail,
-            content: content,
-            duration: duration
-        )
-        modelContext.insert(course)
-        saveChanges()
-        return course
-    }
-    
-    func fetchAllCourses() -> [Course] {
-        let fetchRequest = FetchDescriptor<Course>()
-        return (try? modelContext.fetch(fetchRequest)) ?? []
-    }
-    
-    func updateCourse(course: Course, name: String? = nil, instructorName: String? = nil, thumbnailURL: String? = nil, videoURL: String? = nil, detail: String? = nil, content: String? = nil, duration: String? = nil, watchedDuration: String? = nil) {
-        if let name = name {
-            course.name = name
-        }
-        if let instructorName = instructorName {
-            course.instructorName = instructorName
-        }
-        if let thumbnailURL = thumbnailURL {
-            course.thumbnailURL = thumbnailURL
-        }
-        if let videoURL = videoURL {
-            course.videoURL = videoURL
-        }
-        if let detail = detail {
-            course.detail = detail
-        }
-        if let content = content {
-            course.content = content
-        }
-        if let duration = duration {
-            course.duration = duration
-        }
-        if let watchedDuration = watchedDuration {
-            course.watchedDuration = watchedDuration
-        }
-        saveChanges()
-    }
-    
-    func deleteCourse(course: Course) {
-        modelContext.delete(course)
         saveChanges()
     }
     

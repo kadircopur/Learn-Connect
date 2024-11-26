@@ -8,5 +8,5 @@
 import Foundation
 
 enum Router: String {
-    case CourseURL = "https://gist.githubusercontent.com/kadircopur/837aade951d597b68fbd64695f3f9278/raw/6e1200dac4c3386d9bc704b44fe523683e70663f/course.json"
+    case CourseURL = "https://gist.githubusercontent.com/kadircopur/837aade951d597b68fbd64695f3f9278/raw/3eeff3e3c4d9480471146ebf7c6bea7f033eb276/course.json"
 }

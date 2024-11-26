@@ -14,15 +14,11 @@ class CoursesViewModel {
     private let courseService = CourseService.shared
     
     var courses: [Course] = []
-    var areCoursesLoading = false
     
     init() { fetchCourses() }
     
     func fetchCourses() {
-        areCoursesLoading = true
-        
         courseService.fetchCourses { [weak self] result in
-            self?.areCoursesLoading = false
             switch result {
             case .success(let courses):
                 self?.courses = courses

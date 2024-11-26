@@ -6,56 +6,50 @@
 //
 
 import SwiftUI
-import SwiftData
 
+@MainActor
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    
+    @State var viewModel: ContentViewModel = ContentViewModel()
+    @State var title = ""
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        
+        TabView {
+            CoursesView()
+                .onAppear {
+                    title = "Course"
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                .tabItem {
+                    Label("Courses", systemImage: "book")
                 }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+            
+            MyCoursesView()
+                .onAppear {
+                    title = "Attended Courses"
                 }
-            }
-        } detail: {
-            Text("Select an item")
+                .tabItem {
+                    Label("My Courses", systemImage: "list.bullet.rectangle")
+                }
+            
+            FavoritesView()
+                .onAppear {
+                    title = "Favorite Courses"
+                }
+                .tabItem {
+                    Label("Favorites", systemImage: "star")
+                }
+            
+            ProfileView()
+                .onAppear {
+                    title = "Profile"
+                }
+                .tabItem {
+                    Label("Profile", systemImage: "person.crop.circle")
+                }
         }
+        .navigationTitle(title)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.large)
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
-    }
-}
-
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }

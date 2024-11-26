@@ -13,15 +13,14 @@ struct CoursesView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                VStack {
-                    CoursesList(viewModel: viewModel)
-                }
-                
-                //ActivityIndicator(isLoading: $viewModel.areCoursesLoading)
+            VStack {
+                CoursesList(viewModel: viewModel)
             }
-            .navigationBarTitleDisplayMode(.large)
-            .navigationTitle("Courses")
+            .refreshable {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                viewModel.fetchCourses()
+                print(viewModel.courses.count)
+            }
         }
     }
     
@@ -29,12 +28,11 @@ struct CoursesView: View {
         @Bindable var viewModel: CoursesViewModel
         
         var body: some View {
-            List(viewModel.courses, id: \.id) { course in
-                NavigationLink(
-                    destination: CourseDetailView(viewModel: CourseDetailViewModel(course: course))
-                
-                ) {
-                    CourseCardView(course: course)
+            List {
+                ForEach(viewModel.courses, id: \.id) { course in
+                    NavigationLink(destination: CourseDetailView(viewModel: CourseDetailViewModel(course: course))) {
+                        CourseCardView(course: course)
+                    }
                 }
             }
         }
@@ -45,14 +43,16 @@ struct CoursesView: View {
         
         var body: some View {
             HStack {
-                AsyncImageView(url: course.thumbnailURL,
-                               width: 120,
-                               height: 60)
+                CachedAsyncImageView(url: course.thumbnailURL,
+                                     width: 120,
+                                     height: 60,
+                                     placeholder: Image(.imageplaceholder),
+                                     cornerRadius: 10)
                 
                 VStack(alignment: .leading) {
-                    Text(course.name)
+                    Text(course.name ?? "Unknown name")
                         .font(.callout)
-                    Text(course.instructorName)
+                    Text(course.instructorName ?? "Unknown instructor")
                         .font(.caption)
                 }
             }

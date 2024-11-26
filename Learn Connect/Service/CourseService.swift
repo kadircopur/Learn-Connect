@@ -33,18 +33,7 @@ class CourseService {
             
             do {
                 let decoder = JSONDecoder()
-                let jsonCourses = try decoder.decode([JSONCourse].self, from: data)
-                let courses = jsonCourses.map { jsonCourse in
-                    Course(
-                        id: UUID(uuidString: jsonCourse.id) ?? UUID(),
-                        name: jsonCourse.name ?? "Untitled Course",
-                        instructorName: jsonCourse.instructorName ?? "Unknown Instructor",
-                        thumbnailURL: jsonCourse.thumbnailURL,
-                        videoURL: jsonCourse.videoURL,
-                        detail: jsonCourse.detail ?? "No details available.",
-                        content: jsonCourse.content ?? "No content available.",
-                        duration: jsonCourse.duration)
-                }
+                let courses = try decoder.decode([Course].self, from: data)
                 completion(.success(courses))
             } catch {
                 completion(.failure(error))
